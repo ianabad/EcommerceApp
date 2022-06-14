@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Core.Interfaces;
+using API.DTO;
+using AutoMapper;
 
 namespace API.Controllers
 {
@@ -14,24 +16,29 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductRepo _repo;
+        private readonly IGenericRepo<Product> _repo;
+        private readonly IMapper _mapper;
 
-        public ProductsController(IProductRepo repo)
+        public ProductsController(IGenericRepo<Product> repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts()
+        public async Task<ActionResult<IReadOnlyList<ProductDTO>>> GetProducts()
         {
-            var products = await _repo.GetProductsAsync();
-            return Ok(products);
+            var products = await _repo.ListAllAsync();
+            return Ok(_mapper
+                .Map<IReadOnlyList<Product>, IReadOnlyList<ProductDTO>>(products));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProductById(int id)
+        public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
-            return await _repo.GetProductByIdAsync(id);
+            var product = await _repo.GetByIdAsync(id);
+
+            return _mapper.Map<ProductDTO>(product);
         }
     }
 }

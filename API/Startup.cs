@@ -1,3 +1,4 @@
+using API.Extensions;
 using API.Helpers;
 using Core.Interfaces;
 using Infrastructure.Data;
@@ -22,14 +23,17 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IProductRepo, ProductRepo>();
-            services.AddScoped(typeof(IGenericRepo<>), (typeof(GenericRepo<>)));
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
             services.AddDbContext<StoreContext>(x => x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
-            services.AddSwaggerGen(c =>
+            services.AddApplicationServices();
+            services.AddSwaggerDocumentation();
+            services.AddCors(opt =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
+                });
             });
         }
 
@@ -39,13 +43,14 @@ namespace API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
+                app.UseSwaggerDocumentation();
             }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 

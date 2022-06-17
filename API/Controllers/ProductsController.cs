@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Core.Interfaces;
 using API.DTO;
 using AutoMapper;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -26,11 +27,14 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<ProductDTO>>> GetProducts()
+        public async Task<ActionResult<ProductList<ProductDTO>>> GetProducts()
         {
             var products = await _repo.ListAllAsync();
-            return Ok(_mapper
-                .Map<IReadOnlyList<Product>, IReadOnlyList<ProductDTO>>(products));
+
+            var data = _mapper
+                .Map<IReadOnlyList<Product>, IReadOnlyList<ProductDTO>>(products);
+            
+            return Ok(new ProductList<ProductDTO>(data));
         }
 
         [HttpGet("{id}")]

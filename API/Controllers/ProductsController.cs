@@ -13,9 +13,7 @@ using API.Helpers;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+    public class ProductsController : BaseApiController
     {
         private readonly IGenericRepo<Product> _repo;
         private readonly IMapper _mapper;

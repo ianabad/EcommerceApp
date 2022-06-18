@@ -1,0 +1,19 @@
+<div class="bg-light px-4 py-3 text-uppercase font-weight-bold">
+    Order Summary
+</div>
+<div class="p-4">
+    <ul class="list-unstyled mb-4" *ngIf="(basketTotal$ | async) as totals">
+        <li class="d-flex justify-content-between py-3 border-bottom">
+            <strong class="text-muted">Sub-Total</strong>
+            <strong>{{totals.subtotal | currency}}</strong>
+        </li>
+        <li class="d-flex justify-content-between py-3 border-bottom">
+            <strong class="text-muted">Tax (13%)</strong>
+            <strong>{{totals.tax | currency}}</strong>
+        </li>
+        <li class="d-flex justify-content-between py-3 border-bottom">
+            <strong class="text-muted">Total</strong>
+            <strong>{{totals.total | currency}}</strong>
+        </li>
+    </ul>
+</div>
